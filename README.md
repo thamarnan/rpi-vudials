@@ -171,6 +171,14 @@ Unplug and replug the USB hub, wait 5 seconds, then:
 sudo systemctl restart vu-server
 ```
 
+**Web UI returns "500 Internal Server Error" with `KeyError: 'Content-Type'`:**
+This is a Tornado version incompatibility — VU-Server upstream doesn't pin a Tornado version, and Tornado 6.5+ made a breaking change. Fix:
+```bash
+sudo -u vu /opt/vu-server/app/.venv/bin/pip install "tornado<6.5"
+sudo systemctl restart vu-server
+```
+The installer already does this for fresh installs; you'd only hit it on older installs or after running `vu-update` if upstream hasn't fixed `requirements.txt` yet.
+
 ---
 
 ## Uninstall
