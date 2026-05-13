@@ -177,6 +177,14 @@ sudo -u "${VU_USER}" -H "${VENV_DIR}/bin/pip" install --quiet -r "${VU_APP_DIR}/
 # grep -v '^pyinstaller' "${VU_APP_DIR}/requirements.txt" \
 #   | sudo -u "${VU_USER}" -H "${VENV_DIR}/bin/pip" install --quiet -r /dev/stdin
 
+# Upstream's requirements.txt pins no version for tornado, but VU-Server is
+# incompatible with tornado >= 6.5 (strict header handling causes a
+# KeyError: 'Content-Type' on every response — see Tornado's web.py
+# _clear_representation_headers). Force tornado to the last known-good
+# 6.4.x series.
+log "Pinning tornado<6.5 (upstream compat workaround)..."
+sudo -u "${VU_USER}" -H "${VENV_DIR}/bin/pip" install --quiet "tornado<6.5"
+
 # ---- 5. Patch config.yaml so the API is reachable on the LAN ---------------
 CONFIG_FILE="${VU_APP_DIR}/config.yaml"
 if [[ -f "${CONFIG_FILE}" ]]; then
